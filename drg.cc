@@ -12,6 +12,15 @@ using namespace std;
 using namespace Cantera;
 
 ////////////////////////////////////////////////////////////////////////////////
+///
+/// Constructor function
+/// @param p_gas 
+/// @param p_kin
+/// @param p_spPrincipal
+/// @param p_Ex
+/// @param p_eps
+///
+////////////////////////////////////////////////////////////////////////////////
 
 DRG::DRG(shared_ptr<ThermoPhase> p_gas, shared_ptr<Kinetics> p_kin, 
          vector<string> p_spPrincipal, vector<string> p_Ex, double p_eps) :
@@ -68,6 +77,11 @@ DRG::DRG(shared_ptr<ThermoPhase> p_gas, shared_ptr<Kinetics> p_kin,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+///
+/// Get the sum of the absolute value of the species reaction rates 
+/// @param rop \input vector containing the net rates of progress
+///
+////////////////////////////////////////////////////////////////////////////////
 
 vector<double> DRG::get_sumAbsSpRates(const vector<double> &rop){
 
@@ -82,6 +96,14 @@ vector<double> DRG::get_sumAbsSpRates(const vector<double> &rop){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+///
+/// Get the contribution of species B on the production of species A 
+/// @param A              \input species name 
+/// @param Bloc           \input location of species B in the reactions containing species A 
+/// @param sumAbsRatesA   \input denominator of rAB
+/// @param rop            \input vector containing the net rates of progress 
+///
+////////////////////////////////////////////////////////////////////////////////
 
 double DRG::get_rAB(const size_t A, const size_t Bloc, const double sumAbsRatesA, const vector<double> &rop) {
 
@@ -95,6 +117,11 @@ double DRG::get_rAB(const size_t A, const size_t Bloc, const double sumAbsRatesA
     return rAB / sumAbsRatesA;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+///
+/// Remove species from the initial list if the contribution is less than the tolerance
+/// Calculates rAB and compares against eps
+///
 ////////////////////////////////////////////////////////////////////////////////
 
 void DRG::DRGspeciesSet(){
@@ -135,6 +162,11 @@ void DRG::DRGspeciesSet(){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+///
+/// Take the list of species and convert to a set
+/// @param A \input species name
+///
+////////////////////////////////////////////////////////////////////////////////
 
 void DRG::fill_spset(size_t A) {
     spset.insert(A);
@@ -146,6 +178,10 @@ void DRG::fill_spset(size_t A) {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+///
+/// Remove reactions from the mechanism that contain non-contributing species
+///
 ////////////////////////////////////////////////////////////////////////////////
 
 void DRG::DRGreactionsSet(){
@@ -200,9 +236,12 @@ void DRG::DRGreactionsSet(){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// fdetMech is the name of the detailed mechanism that everything is based on (*.yaml)
-// fsklMech is the name of the new skeletal mechanism file (*.yaml)
-
+///
+/// Write the file containing the new skeletal mechanism and add in any extra species
+/// @param fdetMech \input  the name of the detailed mechanism that everything is based on (*.yaml)
+/// @param fsklMech \output the name of the new skeletal mechanism file (*.yaml)
+///
+////////////////////////////////////////////////////////////////////////////////
 void DRG::writeSkeletalMechanism(string fdetMech, string fsklMech) {
 
     //----------- add extra species to spsetU
