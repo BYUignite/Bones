@@ -6,9 +6,7 @@
 #include <set>
 #include <string>
 
-#include "cantera/base/Solution.h"
-#include "cantera/thermo.h"
-#include "cantera/kinetics.h"
+#include "cantera/core.h"
 
 using std::vector;
 using std::set;

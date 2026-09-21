@@ -1,12 +1,10 @@
-#include <kinsol/kinsol.h>             /* access to KINSOL func., consts. */
-#include <nvector/nvector_serial.h>    /* access to serial N_Vector       */
-#include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix       */
-#include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver */
-#include <sundials/sundials_types.h>   /* defs. of realtype, sunindextype */
+#include <kinsol/kinsol.h>             /* access to KINSOL func., consts.    */
+#include <nvector/nvector_serial.h>    /* access to serial N_Vector          */
+#include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix          */
+#include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver    */
+#include <sundials/sundials_types.h>   /* defs. of sunrealtype, sunindextype */
 
-#include "cantera/base/Solution.h"
-#include "cantera/thermo.h"
-#include "cantera/kinetics.h"
+#include "cantera/core.h"
 
 #include <memory>
 #include <vector>
@@ -129,8 +127,8 @@ static int func(N_Vector ytauvec, N_Vector fvec, void *user_data) {
 
     PSR *psr = static_cast<PSR *>(user_data);
 
-    realtype *ytau = N_VGetArrayPointer(ytauvec);
-    realtype *f  = N_VGetArrayPointer(fvec);
+    sunrealtype *ytau = N_VGetArrayPointer(ytauvec);
+    sunrealtype *f  = N_VGetArrayPointer(fvec);
 
     //psr->gas->setMassFractions(ytau);
     psr->gas->setMassFractions_NoNorm(ytau);

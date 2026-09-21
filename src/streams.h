@@ -1,7 +1,6 @@
 #pragma once
 
-#include "cantera/base/Solution.h"
-#include "cantera/thermo.h"
+#include "cantera/core.h"
 
 #include <memory>
 #include <vector>
@@ -72,7 +71,6 @@ class streams {
 
         void setStoicMixf();
         vector<double> setElementMassFracs(const double *y);
-        vector<double> setElementMoleFracs(const double *y);
         vector<double> getElementMoles(const double *x,
                                        double &nOnotFromO2,
                                        double &nHnotFromH2O,

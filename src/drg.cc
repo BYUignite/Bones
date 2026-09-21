@@ -225,7 +225,7 @@ void DRG::DRGreactionsSet(){
         re = (" " + sp + "$");
         rm = (" " + sp + " ");
         for(auto i : rxsetU) {
-            rxn = kin->reactionString(i);
+            rxn = kin->reaction(i)->equation();
             if(regex_search(rxn, rs) || regex_search(rxn, re) || regex_search(rxn, rm)) {
                 toerase.push_back(i);
             }

@@ -39,7 +39,7 @@ int main() {
 
     double T1 = T0;                  // two streams for composition, but one psr inlet
 
-    auto sol = newSolution(mechName, "", "None");
+    auto sol = newSolution(mechName, "", "none");
     auto gas = sol->thermo();
     auto kin = sol->kinetics();
 
