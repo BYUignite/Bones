@@ -11,4 +11,8 @@
 * ```make```
 * ```make install```
 * ```cd ../run```
-* ```./drg.x```
+* ```./drg.x input/input.yaml```
+
+The user parameters are read from `input/input.yaml`. The executable defaults
+to that filename, so `./drg.x` is also sufficient from the project root or the
+installed `run` directory.

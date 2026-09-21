@@ -1,0 +1,25 @@
+mech:
+  detailed: gri30.yaml
+  skeletal: skel.yaml
+
+drg:
+  tolerance:         0.3
+  principal_species: [CH4]
+  extra_species:     [N2]
+
+streams:
+  pressure:             101325
+  temperature:          300
+  oxidizer_composition: "O2:2, N2:7.52"
+  fuel_composition:     "CH4:1"
+
+mixfrac:
+  count: 11
+  start: 0.03
+  end:   0.07
+
+psr:
+  initial_tau:                0.01
+  temperature_count:          201
+  minimum_temperature:        1000
+  maximum_temperature_delta: -5.1
