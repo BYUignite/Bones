@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 # ---- build options ----
 
-option(BUILD_DOCS "Build documentation" OFF)
+option(BUILD_DOCS "Build documentation" ON)
 
 ################### MAIN PROJECT TARGETS
 
