@@ -13,7 +13,7 @@ using namespace Cantera;
 
 int main(int argc, char** argv) {
 
-    //--------------- input file
+    //--------------- input file (yaml)
 
     string inputName = argc > 1 ? argv[1] : "../input/input.yaml";
     AnyMap input = AnyMap::fromYamlFile(inputName);
@@ -110,16 +110,16 @@ int main(int argc, char** argv) {
         //--------------- solve psr for each T for given composition
 
         double Tmax = Tad + TmaxDelta;      // this can be 0.1 or 0.01 for stoich methane/air, but higher like 5 or more for lean to 0.03 mixf
-        vector<double> Tvec(nT);      // temperature values
+        vector<double> Tvec(nT);            // temperature values
         for(int i=0; i<nT; i++)
             Tvec[i] = Tmax - (double)(i)/(nT-1) * (Tmax - Tmin);
 
-        vector<double> y_tau = yad;   // unknown vector: species mass fractions and tau
+        vector<double> y_tau = yad;         // unknown vector: species mass fractions and tau
         y_tau.push_back(taug);
 
-        for(int i=0; i<nT; i++) {                          // LOOP over each temperature
+        for(int i=0; i<nT; i++) {           // LOOP over each temperature
             psr.setT(Tvec[i]);
-            psr.solvePSR(y_tau, y_tau_scale, f_scale);     // solve psr at this point
+            psr.solvePSR(y_tau, y_tau_scale, f_scale);
 
             gas->setState_TPY(Tvec[i], P, &y_tau[0]);
             drg.DRGspeciesSet();
