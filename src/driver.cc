@@ -5,6 +5,7 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace Cantera;
@@ -81,6 +82,9 @@ int main(int argc, char** argv) {
     double         had;
     double         Tad;
 
+    vector<vector<double>> Tstore(nmixf, vector<double>(nT));
+    vector<vector<double>> τstore(nmixf, vector<double>(nT));
+
     //--------------- PSR object, scaling arrays
 
     PSR psr(gas, kin);
@@ -123,6 +127,9 @@ int main(int argc, char** argv) {
 
             gas->setState_TPY(Tvec[i], P, &y_tau[0]);
             drg.DRGspeciesSet();
+
+            Tstore[imixf][i] = Tvec[i];
+            τstore[imixf][i] = y_tau[nsp];
         }
     }
 
@@ -135,6 +142,25 @@ int main(int argc, char** argv) {
     //--------------- create skeletal mechanism
 
     drg.writeSkeletalMechanism(mechName, skMechName);
+
+    //--------------- output the S-curve data
+
+    ofstream τfile("S_curve_tau.dat");
+    ofstream Tfile("S_curve_T.dat");
+    τfile << "# mixture_fraction, τ1, τ2, ..., τn";
+    Tfile << "# mixture_fraction, T1, T2, ..., Tn";
+    for(int imixf=0; imixf<nmixf; imixf++) {
+        τfile << endl << mixfvec[imixf] << " ";
+        Tfile << endl << mixfvec[imixf] << " ";
+        for(int i=0; i<nT; i++) {
+            τfile << τstore[imixf][i] << " ";
+            Tfile << Tstore[imixf][i] << " ";
+        }
+    }
+    τfile.close();
+    Tfile.close();
+
+    //--------------- 
 
     return 0;
 }
