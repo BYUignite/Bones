@@ -16,35 +16,43 @@ using namespace Cantera;
 #include <iostream>
 using std::cout;
 using std::endl;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static int func(N_Vector yT, N_Vector f, void *user_data);
 
+////////////////////////////////////////////////////////////////////////////////
+///
+/// Class for solving adiabatic, steady PSR.
+/// Unknowns are species mass fractions y_i, and tau, where $T$ is given.
+/// This enables easy solution of the full S-curve including the unstable branch
+/// without having to do arc-length continuation methods.
+///
 ////////////////////////////////////////////////////////////////////////////////
 
 class PSR {
 
     public:
 
-        shared_ptr<ThermoPhase> gas;
-        shared_ptr<Kinetics>    kin;
+        shared_ptr<ThermoPhase> gas;         ///< Cantera gas object
+        shared_ptr<Kinetics>    kin;         ///< Cantera kinetics object
 
-        vector<double>          yin;
-        double                  hin;
-        double                  P;
-        double                  T;
+        vector<double>          yin;         ///< vector of species mass fractions entering the reactor
+        double                  hin;         ///< enthalpy per mass of gas entering the reactor (J/kg)
+        double                  P;           ///< system pressure (Pa)
+        double                  T;           ///< specified reactor temperature (K)
 
-        size_t                  neq;
+        size_t                  neq;         ///< number of unknowns (number species + 1)
 
         //-----------------
 
-        PSR(shared_ptr<ThermoPhase> p_gas, 
-            shared_ptr<Kinetics>    p_kin)   : 
+        PSR(shared_ptr<ThermoPhase> p_gas,   ///< constructure
+            shared_ptr<Kinetics>    p_kin) : 
                 gas(p_gas), kin(p_kin) {
             neq = gas->nSpecies() + 1; 
         }
 
-        PSR(shared_ptr<ThermoPhase> p_gas, 
+        PSR(shared_ptr<ThermoPhase> p_gas,   ///< constructure
             shared_ptr<Kinetics>    p_kin,
             vector<double>         &p_yin,
             double                  p_hin,
