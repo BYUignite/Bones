@@ -14,8 +14,7 @@ The code is intended to be built and used on Linux-like systems, including MacOS
 Required software:
 - CMake 3.15+
 - C++17
-- [SUNDIALS](https://computing.llnl.gov/projects/sundials)
-    - CVODE and KINSOL
+- [SUNDIALS](https://computing.llnl.gov/projects/sundials) KINSOL
 - [Cantera](https://cantera.org/) for reading and writing Cantera input files, and performing PSR simulations
 
 Optional software:
