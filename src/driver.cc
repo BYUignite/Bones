@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     const AnyMap& inp_mech    = input["mechanism"].as<AnyMap>();
     const AnyMap& inp_drg     = input["drg"].as<AnyMap>();
     const AnyMap& inp_streams = input["streams"].as<AnyMap>();
-    const AnyMap& inp_mixfrac = input["mixture_fraction"].as<AnyMap>();
+    const AnyMap& inp_mixfrac = input["mixfrac"].as<AnyMap>();
     const AnyMap& inp_psr     = input["psr"].as<AnyMap>();
 
     //--------------- user inputs
@@ -100,14 +100,17 @@ int main(int argc, char** argv) {
 
     cout << endl << "Solving full PSR S-curve for the following mixture fractions: ";
 
-    double Tdmb;
 
+    int status;
+    bool success = true;
     for(int imixf=0; imixf<nmixf; imixf++) {               // LOOP over each composition
 
+        double Tdmb;
         strm.getMixingState(   mixfvec[imixf], yin, hin, Tdmb);
         strm.getEquilibrium_HP(mixfvec[imixf], yad, had, Tad);
 
         psr.setInlet(yin, hin, P);
+        f_scale[nsp] = 1.0/abs(had);
 
         cout << endl << mixfvec[imixf];
 
@@ -118,12 +121,18 @@ int main(int argc, char** argv) {
         for(int i=0; i<nT; i++)
             Tvec[i] = Tmax - (double)(i)/(nT-1) * (Tmax - Tmin);
 
-        vector<double> y_tau = yad;         // unknown vector: species mass fractions and tau
+        vector<double> y_tau = yad;
         y_tau.push_back(taug);
 
         for(int i=0; i<nT; i++) {           // LOOP over each temperature
             psr.setT(Tvec[i]);
-            psr.solvePSR(y_tau, y_tau_scale, f_scale);
+            status = psr.solvePSR(y_tau, y_tau_scale, f_scale);
+            if (status != KIN_SUCCESS){
+                cout << "PSR solver did not converge, i=" << i << endl;
+                success = false;
+                break;
+            }
+            //if(i==0) cout << "\t" << y_tau[nsp];
 
             gas->setState_TPY(Tvec[i], P, &y_tau[0]);
             drg.DRGspeciesSet();
@@ -131,6 +140,7 @@ int main(int argc, char** argv) {
             Tstore[imixf][i] = Tvec[i];
             τstore[imixf][i] = y_tau[nsp];
         }
+        if (!success) break;
     }
 
     //--------------- output the skeletal species

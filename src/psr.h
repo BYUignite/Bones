@@ -13,6 +13,9 @@ using std::vector;
 using std::shared_ptr;
 using namespace Cantera;
 
+#include <iostream>
+using std::cout;
+using std::endl;
 ////////////////////////////////////////////////////////////////////////////////
 
 static int func(N_Vector yT, N_Vector f, void *user_data);
@@ -61,9 +64,9 @@ class PSR {
 
         //-----------------
 
-        void solvePSR(vector<double> &ytau, 
-                      vector<double> &ytauscale, vector<double> &fscale, 
-                      double ftol=1.0E-5, double stol=1.0E-5) {
+        int solvePSR(vector<double> &ytau, 
+                     vector<double> &ytauscale, vector<double> &fscale, 
+                     double ftol=1.0E-5, double stol=1.0E-10) {
 
             // ytau: guess on input; solution on output
 
@@ -80,9 +83,9 @@ class PSR {
                 NV_Ith_S(ytausun, k)  = ytau[k];
                 NV_Ith_S(scl_ytau, k) = ytauscale[k];
                 NV_Ith_S(scl_f,  k)   = fscale[k];
-                NV_Ith_S(cstrt,  k)   = 0.0;
+                NV_Ith_S(cstrt,  k)   = 0.0;          // 0.0 is unconstrained, 1.0 is >= 0.0, 2.0 is > 0.0
             }
-            NV_Ith_S(cstrt,  neq-1)   = 1.0;
+            NV_Ith_S(cstrt,  neq-1)   = 2.0;
 
             void * kmem = KINCreate(sun);
 
@@ -105,8 +108,9 @@ class PSR {
 
             //---------------------------
 
-            for(size_t k=0; k<neq; k++)
-                ytau[k] = NV_Ith_S(ytausun,k);
+            if(rv == KIN_SUCCESS)
+                for(size_t k = 0; k < neq; ++k)
+                    ytau[k] = NV_Ith_S(ytausun, k);
 
             //---------------- Free memory
 
@@ -118,6 +122,8 @@ class PSR {
             SUNLinSolFree(LS);
             SUNMatDestroy(J);
             SUNContext_Free(&sun);
+
+            return rv;
         }
 };
 
@@ -137,9 +143,9 @@ static int func(N_Vector ytauvec, N_Vector fvec, void *user_data) {
     vector<double> rr(psr->neq-1);
     psr->kin->getNetProductionRates(&rr[0]);
 
-    for(size_t k=0; k<psr->neq-1; k++) {
+    for(size_t k=0; k<psr->neq-1; k++)
         f[k] = (psr->yin[k] - ytau[k])/ytau[psr->neq-1] + rr[k]*psr->gas->molecularWeight(k)/rho;
-    }
+
     f[psr->neq-1] = psr->gas->enthalpy_mass() - psr->hin;
 
     return 0;
