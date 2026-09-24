@@ -7,6 +7,8 @@
 ![S-curve](docs/images/S_curve.png)
 
 
+## Documentation
+Code documentation is at [ignite.byu.edu](https://ignite.byu.edu/bones_documentation)
 ## Build, run
 - ```mkdir build```
 - ```cd build```
